@@ -6,15 +6,12 @@ import userRouter from "./routes/user.js";
 import userHome from "./routes/home.js";
 import morgan from 'morgan';
 
-const corsOptions = {
-  origin: true
-}
 const app = express();
 
 app.use(express.json({ limit: '30mb', extended: true }))
 app.use(express.urlencoded({ limit: '30mb', extended: true }))
 app.use(morgan('tiny'))
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.use("/", userHome);
 app.use("/user", userRouter);
