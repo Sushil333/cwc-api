@@ -5,6 +5,8 @@ import cors from 'cors';
 
 // routes
 import authRoutes from "./routes/auth.js";
+import homeRoute from "./routes/home.js";
+
 
 const app = express();
 
@@ -17,6 +19,7 @@ app.use(express.json({ limit: '30mb', extended: true }));
 app.use(express.urlencoded({ limit: '30mb', extended: true }));
 
 // Use Routes
+app.use('', homeRoute)
 app.use("/api/auth", authRoutes);
 
 const CONNECTION_URL = 'mongodb+srv://admin:UTYeilxfYWj5DrV6@cluster0.st6gh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
