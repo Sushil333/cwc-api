@@ -48,7 +48,7 @@ export const signin = async (req, res) => {
 // @route   POST /api/users/signup
 // @access  Public
 export const signup = async (req, res) => {
-  const { email, password, firstname, lastname } = req.body;
+  const { email, password, firstName, lastName } = req.body;
 
   // parameter validations
   if (!email && !password)
@@ -69,7 +69,7 @@ export const signup = async (req, res) => {
     // create new user with hashed password
     const result = await User.create({
       email,
-      name: `${firstname} ${lastname}`,
+      name: `${firstName} ${lastName}`,
       password: hashedPassword,
       role: Role.User,
     });
