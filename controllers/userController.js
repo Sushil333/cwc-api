@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import User from '../models/user.js';
 import Role from '../models/_helpers/role.js';
 import generateToken from '../utils/generateToken.js';
-import verifyJwt from '../utils/verifyJwt.js';
+
 
 // @desc    Auth user & get token
 // @route   POST /api/users/signin
@@ -30,11 +30,12 @@ export const signin = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
 
     // response jwt token
-    const token = generateToken({ 
-      id: oldUser._id,
-      email: oldUser.email, 
-      displayName: oldUser.displayName,
-      profile_pic_url: oldUser.profile_pic_url,
+    const token = generateToken({
+      id: result._id,
+      email: result.email,
+      name: result.name,
+      imageUrl: result.imageUrl,
+      role: result.role
     });
     res.status(200).json({ token });
   } catch (err) {
@@ -47,7 +48,7 @@ export const signin = async (req, res) => {
 // @route   POST /api/users/signup
 // @access  Public
 export const signup = async (req, res) => {
-  const { email, password, displayName } = req.body;
+  const { email, password, firstname, lastname } = req.body;
 
   // parameter validations
   if (!email && !password)
@@ -68,17 +69,18 @@ export const signup = async (req, res) => {
     // create new user with hashed password
     const result = await User.create({
       email,
-      displayName,
+      name: `${firstname} ${lastname}`,
       password: hashedPassword,
       role: Role.User,
     });
 
     // response jwt token
-    const token = generateToken({ 
+    const token = generateToken({
       id: result._id,
-      email: result.email, 
-      displayName: result.displayName,
-      profile_pic_url: result.profile_pic_url,
+      email: result.email,
+      name: result.name,
+      imageUrl: result.imageUrl,
+      role: result.role
     });
     res.status(201).json({ token });
   } catch (err) {
@@ -87,10 +89,10 @@ export const signup = async (req, res) => {
   }
 };
 
+
 // @desc    Get user profile
 // @route   POST /api/users/get-user-profile
 // @access  Private
-
 export const getUserProfile = async (req, res) => {
   res.json({
     isLoggedIn: true,
