@@ -4,7 +4,6 @@ import User from '../models/user.js';
 import Role from '../models/_helpers/role.js';
 import generateToken from '../utils/generateToken.js';
 
-
 // @desc    Auth user & get token
 // @route   POST /api/users/signin
 // @access  Public
@@ -29,15 +28,16 @@ export const signin = async (req, res) => {
     if (!isPasswordCorrect)
       return res.status(400).json({ message: 'Invalid credentials' });
 
+    oldUser = {
+      id: oldUser._id,
+      email: oldUser.email,
+      name: oldUser.name,
+      imageUrl: oldUser.imageUrl,
+      role: oldUser.role,
+    };
     // response jwt token
-    const token = generateToken({
-      id: result._id,
-      email: result.email,
-      name: result.name,
-      imageUrl: result.imageUrl,
-      role: result.role
-    });
-    res.status(200).json({ token });
+    const token = generateToken(oldUser);
+    res.status(200).json({ oldUser, token });
   } catch (err) {
     res.status(500).json({ message: err.message });
     console.log(err);
@@ -74,21 +74,22 @@ export const signup = async (req, res) => {
       role: Role.User,
     });
 
-    // response jwt token
-    const token = generateToken({
+    result = {
       id: result._id,
       email: result.email,
       name: result.name,
       imageUrl: result.imageUrl,
-      role: result.role
-    });
-    res.status(201).json({ token });
+      role: result.role,
+    };
+
+    // response jwt token
+    const token = generateToken({});
+    res.status(201).json({ result, token });
   } catch (err) {
     res.status(500).json({ message: err.message });
     console.log(err);
   }
 };
-
 
 // @desc    Get user profile
 // @route   POST /api/users/get-user-profile
