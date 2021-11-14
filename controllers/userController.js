@@ -28,7 +28,7 @@ export const signin = async (req, res) => {
     if (!isPasswordCorrect)
       return res.status(400).json({ message: 'Invalid credentials' });
 
-    oldUser = {
+    const resData = {
       id: oldUser._id,
       email: oldUser.email,
       name: oldUser.name,
@@ -36,8 +36,8 @@ export const signin = async (req, res) => {
       role: oldUser.role,
     };
     // response jwt token
-    const token = generateToken(oldUser);
-    res.status(200).json({ oldUser, token });
+    const token = generateToken(resData);
+    res.status(200).json({ ...resData, token });
   } catch (err) {
     res.status(500).json({ message: err.message });
     console.log(err);
@@ -74,7 +74,7 @@ export const signup = async (req, res) => {
       role: Role.User,
     });
 
-    result = {
+    const resData = {
       id: result._id,
       email: result.email,
       name: result.name,
@@ -83,8 +83,8 @@ export const signup = async (req, res) => {
     };
 
     // response jwt token
-    const token = generateToken({});
-    res.status(201).json({ result, token });
+    const token = generateToken(resData);
+    res.status(201).json({ ...resData, token });
   } catch (err) {
     res.status(500).json({ message: err.message });
     console.log(err);
