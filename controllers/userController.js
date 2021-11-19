@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import asyncHandler from 'express-async-handler';
 
 import User from '../models/user.js';
 import Role from '../models/_helpers/role.js';
@@ -7,7 +8,7 @@ import generateToken from '../utils/generateToken.js';
 // @desc    Auth user & get token
 // @route   POST /api/users/signin
 // @access  Public
-export const signin = async (req, res) => {
+export const signin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   // parameter validations
@@ -17,37 +18,31 @@ export const signin = async (req, res) => {
   if (!password)
     return res.status(400).json({ message: 'Password is required!' });
 
-  try {
-    // check for user existance
-    const oldUser = await User.findOne({ email });
-    if (!oldUser)
-      return res.status(404).json({ message: "User doesn't exist" });
+  // check for user existance
+  const oldUser = await User.findOne({ email });
+  if (!oldUser) return res.status(404).json({ message: "User doesn't exist" });
 
-    // check for hashed password match
-    const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
-    if (!isPasswordCorrect)
-      return res.status(400).json({ message: 'Invalid credentials' });
+  // check for hashed password match
+  const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
+  if (!isPasswordCorrect)
+    return res.status(400).json({ message: 'Invalid credentials' });
 
-    const resData = {
-      id: oldUser._id,
-      email: oldUser.email,
-      name: oldUser.name,
-      imageUrl: oldUser.imageUrl,
-      role: oldUser.role,
-    };
-    // response jwt token
-    const token = generateToken(resData);
-    res.status(200).json({ ...resData, token });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-    console.log(err);
-  }
-};
+  const resData = {
+    id: oldUser._id,
+    email: oldUser.email,
+    name: oldUser.name,
+    imageUrl: oldUser.imageUrl,
+    role: oldUser.role,
+  };
+  // response jwt token
+  const token = generateToken(resData);
+  res.status(200).json({ ...resData, token });
+});
 
 // @desc    Auth user & get token
 // @route   POST /api/users/signup
 // @access  Public
-export const signup = async (req, res) => {
+export const signup = asyncHandler(async (req, res) => {
   const { email, password, firstName, lastName } = req.body;
 
   // parameter validations
@@ -57,39 +52,33 @@ export const signup = async (req, res) => {
   if (!password)
     return res.status(400).json({ message: 'Password is required!' });
 
-  try {
-    // check for user existance
-    const oldUser = await User.findOne({ email });
-    if (oldUser)
-      return res.status(400).json({ message: 'User already exists' });
+  // check for user existance
+  const oldUser = await User.findOne({ email });
+  if (oldUser) return res.status(400).json({ message: 'User already exists' });
 
-    // generate hash for passsword
-    const hashedPassword = await bcrypt.hash(password, 12);
+  // generate hash for passsword
+  const hashedPassword = await bcrypt.hash(password, 12);
 
-    // create new user with hashed password
-    const result = await User.create({
-      email,
-      name: `${firstName} ${lastName}`,
-      password: hashedPassword,
-      role: Role.User,
-    });
+  // create new user with hashed password
+  const result = await User.create({
+    email,
+    name: `${firstName} ${lastName}`,
+    password: hashedPassword,
+    role: Role.User,
+  });
 
-    const resData = {
-      id: result._id,
-      email: result.email,
-      name: result.name,
-      imageUrl: result.imageUrl,
-      role: result.role,
-    };
+  const resData = {
+    id: result._id,
+    email: result.email,
+    name: result.name,
+    imageUrl: result.imageUrl,
+    role: result.role,
+  };
 
-    // response jwt token
-    const token = generateToken(resData);
-    res.status(201).json({ ...resData, token });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-    console.log(err);
-  }
-};
+  // response jwt token
+  const token = generateToken(resData);
+  res.status(201).json({ ...resData, token });
+});
 
 // @desc    Get user profile
 // @route   POST /api/users/get-user-profile
