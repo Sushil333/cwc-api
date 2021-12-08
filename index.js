@@ -8,7 +8,6 @@ import connectDB from './config/db.js';
 // routes
 import authRoutes from './routes/userRoutes.js';
 import storeRoutes from './routes/storeRoutes.js';
-import dishRoutes from './routes/dishRoutes.js';
 
 dotenv.config();
 
@@ -28,7 +27,6 @@ app.get('/', (req, res) => {
 
 app.use('/api/user', authRoutes);
 app.use('/api/store', storeRoutes);
-app.use('/api/dish', dishRoutes);
 
 const PORT = process.env.PORT || 5000;
 
