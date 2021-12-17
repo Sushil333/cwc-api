@@ -45,7 +45,7 @@ export const createStore = asyncHandler(async (req, res) => {
 /**
  * @desc    create dish
  * @route   POST /api/store/dishes/create
- * @access  Private
+ * @access  Public
  */
 export const createDish = asyncHandler(async (req, res) => {
   const imgUrl =
@@ -98,11 +98,13 @@ export const createDish = asyncHandler(async (req, res) => {
   if (errorList.length > 0) {
     res.status(400).json({ message: errorList });
   } else {
-    const dish = Dish.findById(dishId).exists();
-    console.log(dish);
-    if(!dish) res.status(400).json({message: 'Record Not Found!'});
-    dish.remove();
-    res.status(200).json({message: 'Record Succesfully Deleted'});
+    const dish = await Dish.findOne({ _id: dishId});
+    if(!dish) {
+      res.status(400).json({message: 'Record Not Found!'});
+    } else {
+      dish.remove();
+      res.status(200).json({message: 'Record Succesfully Deleted'});
+    }
   }
 });
 
@@ -117,6 +119,6 @@ export const getStoreDishes = asyncHandler(async (req, res) => {
     res.status(400).json({ message: 'You have to create your store first!' });
   }
 
-  const allDishes = await Dish.find({ storeId: hasStore.id }).sort({"createdAt": -1})
+  const allDishes = await Dish.find({ storeId: hasStore.id }).sort({"createdAt": -1});
   res.status(200).json({ storesAllDishes: allDishes });
 });
