@@ -45,7 +45,7 @@ export const createStore = asyncHandler(async (req, res) => {
 /**
  * @desc    create dish
  * @route   POST /api/store/dishes/create
- * @access  Public
+ * @access  Private
  */
 export const createDish = asyncHandler(async (req, res) => {
   const imgUrl =
@@ -80,6 +80,33 @@ export const createDish = asyncHandler(async (req, res) => {
 });
 
 /**
+ * @desc    delete dish
+ * @route   POST /api/store/dishes/delete
+ * @access  Private
+ */
+ export const deleteDish = asyncHandler(async (req, res) => {
+  const { dishId } = req.body;
+
+  const hasStore = await Store.findOne({ owner: req.user.id });
+  if (!hasStore) {
+    res.status(400).json({ message: 'You have to create your store first!' });
+  }
+
+  let errorList = [];
+  if (!dishId) errorList.push('DishId is required');
+
+  if (errorList.length > 0) {
+    res.status(400).json({ message: errorList });
+  } else {
+    const dish = Dish.findById(dishId).exists();
+    console.log(dish);
+    if(!dish) res.status(400).json({message: 'Record Not Found!'});
+    dish.remove();
+    res.status(200).json({message: 'Record Succesfully Deleted'});
+  }
+});
+
+/**
  * @desc    create store
  * @route   POST /api/store/dishes/get-all
  * access  Public
@@ -90,6 +117,6 @@ export const getStoreDishes = asyncHandler(async (req, res) => {
     res.status(400).json({ message: 'You have to create your store first!' });
   }
 
-  const allDishes = await Dish.find({ storeId: hasStore.id });
+  const allDishes = await Dish.find({ storeId: hasStore.id }).sort({"createdAt": -1})
   res.status(200).json({ storesAllDishes: allDishes });
 });
