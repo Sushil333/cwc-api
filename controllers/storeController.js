@@ -122,3 +122,14 @@ export const getStoreDishes = asyncHandler(async (req, res) => {
   const allDishes = await Dish.find({ storeId: hasStore.id }).sort({"createdAt": -1});
   res.status(200).json({ storesAllDishes: allDishes });
 });
+
+
+/**
+ * @desc    create store
+ * @route   POST /api/store/dishes/get-all
+ * access  Public
+ */
+ export const getAllDishes = asyncHandler(async (req, res) => {
+  const allDishes = await Dish.find().sort({"createdAt": -1});
+  res.status(200).json({ storesAllDishes: allDishes });
+});
