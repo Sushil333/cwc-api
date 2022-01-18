@@ -11,7 +11,7 @@ import Dish from '../models/dish.js';
 export const createStore = asyncHandler(async (req, res) => {
   const imgUrl =
     'https://lh3.googleusercontent.com/EGD6C34eosVtKkElJybCOXIaOC-_iw5lYXzOmGdfMpjtaqijt1Oym_ltWjs5uyx3d8jo0ew8rg7tzFVMWszKGSbL3Ny_=w256';
-  const { name, phoneNo, address, subPrice, gstin } = req.body;
+  const { storeName, mobileNo, storeAddress, subscriptionPrice, gstin } = req.body;
 
   const hasStore = await Store.findOne({ owner: req.user.id });
   if (hasStore) {
@@ -19,19 +19,19 @@ export const createStore = asyncHandler(async (req, res) => {
   }
 
   let errorList = [];
-  if (!name) errorList.push('name is required');
-  if (!phoneNo) errorList.push('phoneNo is required');
-  if (!address) errorList.push('address is required');
-  if (!subPrice) errorList.push('subPrice is required');
+  if (!storeName) errorList.push('Store Name is required');
+  if (!mobileNo) errorList.push('Phone No. is required');
+  if (!storeAddress) errorList.push('Store Address is required');
+  if (!subscriptionPrice) errorList.push('Subscription Price is required');
 
   if (errorList.length > 0) {
     res.status(400).json({ message: errorList });
   } else {
     const store = new Store({
-      name,
-      phoneNo,
-      address,
-      subPrice,
+      storeName,
+      mobileNo,
+      storeAddress,
+      subscriptionPrice,
       gstin,
       imageUrl: imgUrl,
       owner: req.user.id,

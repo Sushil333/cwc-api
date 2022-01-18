@@ -2,10 +2,10 @@ import mongoose from 'mongoose';
 
 const storeSchema = mongoose.Schema(
   {
-    name: { type: String, required: true },
-    phoneNo: { type: Number, required: true },
-    address: { type: String, required: true },
-    subPrice: { type: String, required: true },
+    StoreName: { type: String, required: true },
+    mobileNo: { type: Number, required: true },
+    storeAddress: { type: String, required: true },
+    subscriptionPrice: { type: String, required: true },
     gstin: { type: String, required: false },
     imageUrl: { type: String, required: false },
     verifed: { type: Boolean, default: false, required: true },
