@@ -10,7 +10,7 @@ import Dish from '../models/dish.js';
  */
 export const createStore = asyncHandler(async (req, res) => {
   const imgUrl =
-    'https://lh3.googleusercontent.com/EGD6C34eosVtKkElJybCOXIaOC-_iw5lYXzOmGdfMpjtaqijt1Oym_ltWjs5uyx3d8jo0ew8rg7tzFVMWszKGSbL3Ny_=w256';
+    'https://via.placeholder.com/150';
   const { storeName, mobileNo, storeAddress, subscriptionPrice, gstin } = req.body;
 
   const hasStore = await Store.findOne({ owner: req.user.id });
