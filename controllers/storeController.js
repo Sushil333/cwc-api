@@ -71,7 +71,7 @@ export const createDish = asyncHandler(async (req, res) => {
       description,
       price,
       storeId: hasStore.id,
-      imageUrl: imgUrl || imageUrl,
+      imageUrl: imageUrl || imgUrl,
     });
 
     const createdDish = await dish.save();
