@@ -8,6 +8,7 @@ const userSchema = mongoose.Schema(
     imageUrl: { type: String, required: false },
     role: { type: String, required: true },
     id: { type: String },
+    active: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

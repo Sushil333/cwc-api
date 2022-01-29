@@ -21,7 +21,7 @@ export const signin = asyncHandler(async (req, res) => {
   // check for user existance
   const oldUser = await User.findOne({ email });
   if (!oldUser) return res.status(404).json({ message: "User doesn't exist" });
-
+  if (!oldUser.active) res.status(400).json({ message: 'Account is blocked!' });
   // check for hashed password match
   const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
   if (!isPasswordCorrect)
@@ -89,3 +89,27 @@ export const getUserProfile = async (req, res) => {
     user: req.user,
   });
 };
+
+// @desc    Get all managers
+// @route   POST /api/users/get-all-managers
+// @access  Private
+export const getAllManagers = asyncHandler(async (req, res) => {
+  if (req.user.role === 'Admin') {
+    const allManagers = await User.find().sort({ createdAt: -1 });
+    res.status(200).json({ allManagers });
+  } else res.status(400).json({ message: "You don't have permission" });
+});
+
+export const deactivateUser = asyncHandler(async (req, res) => {
+  const { id, active } = req.body;
+  if (!id) {
+    res.status(400).json('ID is required!');
+  } else {
+    const filter = { _id: id };
+    const update = { active: active };
+    if (req.user.role === 'Admin') {
+      const user = await User.findOneAndUpdate(filter, update);
+      res.status(200).json({ message: 'Updated Successfully' });
+    } else res.status(400).json({ message: "You don't have permission" });
+  }
+});
