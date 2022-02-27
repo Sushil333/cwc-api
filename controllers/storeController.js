@@ -1,8 +1,13 @@
 import asyncHandler from 'express-async-handler';
+import { unlink } from 'fs';
+import util from 'util';
 
 import Store from '../models/store.js';
 import Dish from '../models/dish.js';
 
+import { deleteFile, uploadFile, getFileStream } from '../utils/s3.js';
+
+const unLinkFile = util.promisify(unlink);
 /**
  * @desc    create store
  * @route   POST /api/store/create
@@ -48,10 +53,8 @@ export const createStore = asyncHandler(async (req, res) => {
  * @access  Public
  */
 export const createDish = asyncHandler(async (req, res) => {
-  // console.log(req.body);
-  // console.log(req.file);
-
-  const { dishName, description, price, imageUrl } = req.body;
+  const { dishName, description, price } = req.body;
+  const dishImg = req.file;
 
   const hasStore = await Store.findOne({ owner: req.user.id });
   if (!hasStore) {
@@ -62,21 +65,25 @@ export const createDish = asyncHandler(async (req, res) => {
   if (!dishName) errorList.push('DishName is required');
   if (!description) errorList.push('Description is required');
   if (!price) errorList.push('Price is required');
-  if (!imageUrl) errorList.push('ImageUrl is required');
+  if (!dishImg) errorList.push('ImageUrl is required');
 
   if (errorList.length > 0) {
     res.status(400).json({ message: errorList });
   } else {
+    const aws_res = await uploadFile(dishImg);
+    await unLinkFile(dishImg.path);
+
     const dish = new Dish({
       dishName,
       description,
       price,
       storeId: hasStore.id,
-      imageUrl: 'sadsa',
+      imgKey: aws_res.Key,
+      imgUrl: aws_res.Location,
     });
 
     const createdDish = await dish.save();
-    res.status(201).json(createdDish);
+    res.status(201).json({ d: 'sf' });
   }
 });
 
@@ -103,6 +110,7 @@ export const deleteDish = asyncHandler(async (req, res) => {
     if (!dish) {
       res.status(400).json({ message: 'Record Not Found!' });
     } else {
+      const aws_res = await deleteFile(dish.imgKey);
       dish.remove();
       res.status(200).json({ message: 'Record Succesfully Deleted' });
     }
@@ -134,4 +142,10 @@ export const getStoreDishes = asyncHandler(async (req, res) => {
 export const getAllDishes = asyncHandler(async (req, res) => {
   const allDishes = await Dish.find().sort({ createdAt: -1 });
   res.status(200).json({ storesAllDishes: allDishes });
+});
+
+export const getDishImage = asyncHandler(async (req, res) => {
+  const { key } = req.params;
+  const readStream = getFileStream(key);
+  readStream.pipe(res);
 });

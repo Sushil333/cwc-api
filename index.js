@@ -15,7 +15,7 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
+app.use(cors({origin: '*'}));
 app.use(morgan('dev'));
 app.use(express.json({ limit: '30mb', extended: true }));
 app.use(express.urlencoded({ limit: '30mb', extended: true }));
