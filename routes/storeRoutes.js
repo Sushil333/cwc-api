@@ -11,6 +11,7 @@ import {
   getStoreDishes,
   getAllDishes,
   getDishImage,
+  storeRequests
 } from '../controllers/storeController.js';
 
 /**
@@ -37,12 +38,19 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // router.get('/', verifyJwt, userStore);
-router.post('/create', verifyJwt, createStore);
-
+router.post(
+  '/create',
+  upload.fields([
+    { name: 'aadhar', maxCount: 1 },
+    { name: 'pancard', maxCount: 1 },
+  ]),
+  createStore
+);
 router.post('/dishes/create', verifyJwt, upload.single('dishImg'), createDish);
 router.post('/dishes/delete', verifyJwt, deleteDish);
 router.get('/dishes/get-store-dishes', verifyJwt, getStoreDishes);
 router.get('/dishes/get-all-dishes', getAllDishes);
 router.get('/dish/image/:key', getDishImage);
+router.get('/requests', verifyJwt, storeRequests);
 
 export default router;

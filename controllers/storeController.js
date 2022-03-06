@@ -14,32 +14,33 @@ const unLinkFile = util.promisify(unlink);
  * access  Public
  */
 export const createStore = asyncHandler(async (req, res) => {
-  const imgUrl = 'https://via.placeholder.com/150';
-  const { storeName, mobileNo, storeAddress, subscriptionPrice, gstin } =
-    req.body;
+  const aadharCard = req.files['aadhar'][0];
+  const panCard = req.files['pancard'][0];
 
-  const hasStore = await Store.findOne({ owner: req.user.id });
-  if (hasStore) {
-    res.status(400).json({ message: 'You Already Have A Store!' });
-  }
+  const { storeName, email, mobileNo, storeAddress } = req.body;
 
-  let errorList = [];
+  const errorList = [];
+  if (!email) errorList.push('Email is required');
+  if (!aadharCard) errorList.push('Aadhar Card is required');
+  if (!panCard) errorList.push('Pan Card is required');
   if (!storeName) errorList.push('Store Name is required');
   if (!mobileNo) errorList.push('Phone No. is required');
   if (!storeAddress) errorList.push('Store Address is required');
-  if (!subscriptionPrice) errorList.push('Subscription Price is required');
 
   if (errorList.length > 0) {
     res.status(400).json({ message: errorList });
   } else {
+    const aadharUploadRes = await uploadFile(aadharCard);
+    const panUploadRes = await uploadFile(panCard);
+
+    console.log();
     const store = new Store({
       storeName,
       mobileNo,
       storeAddress,
-      subscriptionPrice,
-      gstin,
-      imageUrl: imgUrl,
-      owner: req.user.id,
+      email,
+      aadharCard: aadharUploadRes.Location,
+      panCard: panUploadRes.Location,
     });
 
     const createdStore = await store.save();
@@ -61,7 +62,7 @@ export const createDish = asyncHandler(async (req, res) => {
     res.status(400).json({ message: 'You have to create your store first!' });
   }
 
-  let errorList = [];
+  const errorList = [];
   if (!dishName) errorList.push('DishName is required');
   if (!description) errorList.push('Description is required');
   if (!price) errorList.push('Price is required');
@@ -83,7 +84,7 @@ export const createDish = asyncHandler(async (req, res) => {
     });
 
     const createdDish = await dish.save();
-    res.status(201).json({ d: 'sf' });
+    res.status(201).json(createdDish);
   }
 });
 
@@ -148,4 +149,15 @@ export const getDishImage = asyncHandler(async (req, res) => {
   const { key } = req.params;
   const readStream = getFileStream(key);
   readStream.pipe(res);
+});
+
+
+/**
+ * @desc    create store
+ * @route   POST /api/store/requests
+ * access  Public
+ */
+export const storeRequests = asyncHandler(async (req, res) => {
+  const storeRequestList = await Store.find().sort({ createdAt: -1 });
+  res.status(200).json({ data: storeRequestList });
 });
