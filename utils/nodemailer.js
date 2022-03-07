@@ -24,8 +24,11 @@ export default async function sendMail(payload) {
         `../email-templates/${payload.type}.html`,
         'utf-8',
         (err, data) => {
-          let nn = data.replace(/{{ NAME }}/, payload.name);
-          console.log(nn);
+          if (data) {
+            let nn = data.replace(/{{ NAME }}/, payload.name);
+          } else {
+            console.log('no data found');
+          }
         }
       );
     }
