@@ -1,5 +1,4 @@
 import nodemailer from 'nodemailer';
-import fs from 'fs';
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -10,36 +9,28 @@ const transporter = nodemailer.createTransport({
 });
 
 // send mail with defined transport object
-const mailOptions = {
-  from: 'bhardwajsushil911@gmail.com', // sender address
-  to: 'sushilbhardwaj705@gmail.com', // list of receivers
-  subject: 'Hello ✔', // Subject line
-  html: '<b>Hello world?</b>', // html body
-};
+// const mailOptions = {
+//   from: 'bhardwajsushil911@gmail.com', // sender address
+//   to: 'sushilbhardwaj705@gmail.com', // list of receivers
+//   subject: 'Hello ✔', // Subject line
+//   html: '<b>Hello world?</b>', // html body
+// };
 
 export default async function sendMail(payload) {
-  try {
-    if (payload.type === 'approved') {
-      fs.readFile(
-        `../email-templates/${payload.type}.html`,
-        'utf-8',
-        (err, data) => {
-          if (data) {
-            let nn = data.replace(/{{ NAME }}/, payload.name);
-          } else {
-            console.log('no data found');
-          }
-        }
-      );
+  if (payload.type === 'approved') {
+    try {
+      const info = await transporter.sendMail({
+        from: 'bhardwajsushil911@gmail.com',
+        to: payload.to,
+        subject: 'Hello ✔',
+        text: `
+        Dear ${payload.name},
+        Congratulations, We have verified your store.
+      `,
+      });
+      console.log(info)
+    } catch (err) {
+      console.log(err);
     }
-
-    const info = await transporter.sendMail({
-      ...mailOptions,
-      to: payload.to,
-      html: nn,
-    });
-    console.log(info);
-  } catch (err) {
-    console.log(err);
   }
 }
