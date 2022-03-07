@@ -1,13 +1,11 @@
 import asyncHandler from 'express-async-handler';
-import { unlink } from 'fs';
-import util from 'util';
 
 import Store from '../models/store.js';
 import Dish from '../models/dish.js';
 
 import { deleteFile, uploadFile, getFileStream } from '../utils/s3.js';
+import sendMail from '../utils/nodemailer.js';
 
-const unLinkFile = util.promisify(unlink);
 /**
  * @desc    create store
  * @route   POST /api/store/create
@@ -49,6 +47,43 @@ export const createStore = asyncHandler(async (req, res) => {
 });
 
 /**
+ * @desc    new store requets
+ * @route   POST /api/store/requests
+ * access  private
+ */
+export const storeRequests = asyncHandler(async (req, res) => {
+  const storeRequestList = await Store.find().sort({ createdAt: -1 });
+  res.status(200).json({ data: storeRequestList });
+});
+
+/**
+ * @desc    create store
+ * @route   POST /api/store/send-approved-mail
+ * access  private
+ */
+export const sendApprovedMail = asyncHandler(async (req, res) => {
+  const { emailID } = req.params;
+  const payload = {
+    to: 'sushilbhardwaj705@gmail.com',
+    type: 'approved',
+  };
+  const mailRes = await sendMail(payload);
+  console.log(mailRes);
+  res.status(200).json({ data: `send verification mail to ${emailID}` });
+});
+
+/**
+ * @desc    create store
+ * @route   POST /api/store/send-rejection-mail
+ * access  private
+ */
+export const sendRejectioMail = asyncHandler(async (req, res) => {
+  res.status(200).json({ data: 'send rejection mail' });
+});
+
+//-------- store dish function -----------------//
+
+/**
  * @desc    create dish
  * @route   POST /api/store/dishes/create
  * @access  Public
@@ -72,7 +107,6 @@ export const createDish = asyncHandler(async (req, res) => {
     res.status(400).json({ message: errorList });
   } else {
     const aws_res = await uploadFile(dishImg);
-    await unLinkFile(dishImg.path);
 
     const dish = new Dish({
       dishName,
@@ -119,7 +153,7 @@ export const deleteDish = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    create store
+ * @desc    get store dishes
  * @route   POST /api/store/dishes/get-all
  * access  Public
  */
@@ -136,7 +170,7 @@ export const getStoreDishes = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    create store
+ * @desc    get all dishes
  * @route   POST /api/store/dishes/get-all
  * access  Public
  */
@@ -145,19 +179,13 @@ export const getAllDishes = asyncHandler(async (req, res) => {
   res.status(200).json({ storesAllDishes: allDishes });
 });
 
+/**
+ * @desc    get dishes image
+ * @route   POST /api/store/dishes/get-all
+ * access  Public
+ */
 export const getDishImage = asyncHandler(async (req, res) => {
   const { key } = req.params;
   const readStream = getFileStream(key);
   readStream.pipe(res);
-});
-
-
-/**
- * @desc    create store
- * @route   POST /api/store/requests
- * access  Public
- */
-export const storeRequests = asyncHandler(async (req, res) => {
-  const storeRequestList = await Store.find().sort({ createdAt: -1 });
-  res.status(200).json({ data: storeRequestList });
 });

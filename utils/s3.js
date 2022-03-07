@@ -1,6 +1,10 @@
 import { createReadStream } from 'fs';
 import aws from 'aws-sdk';
 import dotenv from 'dotenv';
+import { unlink } from 'fs';
+import util from 'util';
+
+const unLinkFile = util.promisify(unlink);
 
 dotenv.config();
 
@@ -15,9 +19,8 @@ const s3 = new aws.S3({
   secretAccessKey,
 });
 
-
 // uploads a file to s3
-function uploadFile(file) {
+async function uploadFile(file) {
   const fileStream = createReadStream(file.path);
 
   const uploadParams = {
@@ -26,11 +29,12 @@ function uploadFile(file) {
     Key: file.filename,
   };
 
+  await unLinkFile(file.path);
+
   return s3.upload(uploadParams).promise();
 }
 const _uploadFile = uploadFile;
 export { _uploadFile as uploadFile };
-
 
 // downloads a file from s3
 function getFileStream(fileKey) {
@@ -44,7 +48,6 @@ function getFileStream(fileKey) {
 const _getFileStream = getFileStream;
 export { _getFileStream as getFileStream };
 
-
 // downloads a file from s3
 function deleteFile(fileKey) {
   const downloadParams = {
@@ -54,4 +57,4 @@ function deleteFile(fileKey) {
 
   return s3.deleteObject(downloadParams).promise();
 }
-export { deleteFile }
+export { deleteFile };
