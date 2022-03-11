@@ -19,16 +19,15 @@ const transporter = nodemailer.createTransport({
 export default async function sendMail(payload) {
   if (payload.type === 'approved') {
     try {
-      const info = await transporter.sendMail({
+      await transporter.sendMail({
         from: 'bhardwajsushil911@gmail.com',
         to: payload.to,
         subject: 'Hello ✔',
         text: `
-        Dear ${payload.name},
+        Hii there,
         Congratulations, We have verified your store.
       `,
       });
-      console.log(info)
     } catch (err) {
       console.log(err);
     }

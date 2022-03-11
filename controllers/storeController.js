@@ -1,14 +1,19 @@
+import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import asyncHandler from 'express-async-handler';
 
 import Store from '../models/store.js';
+import Manager from '../models/manager.js';
 import Dish from '../models/dish.js';
+import Role from '../models/_helpers/role.js';
 
 import { deleteFile, uploadFile, getFileStream } from '../utils/s3.js';
 import sendMail from '../utils/nodemailer.js';
+import storeStatus from '../models/_helpers/storeStatus.js';
 
 /**
- * @desc    create store
- * @route   POST /api/store/create
+ * @desc   create store
+ * @route  POST /api/store/create
  * access  Public
  */
 export const createStore = asyncHandler(async (req, res) => {
@@ -47,8 +52,8 @@ export const createStore = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    new store requets
- * @route   POST /api/store/requests
+ * @desc   new store requets
+ * @route  POST /api/store/requests
  * access  private
  */
 export const storeRequests = asyncHandler(async (req, res) => {
@@ -57,24 +62,53 @@ export const storeRequests = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    create store
- * @route   POST /api/store/send-approved-mail
+ * @desc   create store
+ * @route  POST /api/store/send-approved-mail
  * access  private
  */
 export const sendApprovedMail = asyncHandler(async (req, res) => {
-  const { emailID } = req.params;
-  const payload = {
-    to: 'sushilbhardwaj705@gmail.com',
-    type: 'approved',
-  };
-  const mailRes = await sendMail(payload);
-  console.log(mailRes);
-  res.status(200).json({ data: `send verification mail to ${emailID}` });
+  const { id } = req.params;
+
+  const store = await Store.findById(id);
+
+  if (!store) res.send({ data: 'Store not found!' });
+  else {
+    let password = crypto.randomBytes(8).toString('hex');
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    const result = await Manager.create({
+      email: store.email,
+      name: `${store.firstName} ${store.lastName}`,
+      password: hashedPassword,
+      role: Role.Manager,
+      active: true,
+    });
+
+    store.owner = result._id;
+    store.status = storeStatus.Approved;
+
+    store.save((err) => {
+      if (err) res.status(400).json({ data: err });
+    });
+
+    const payload = {
+      to: store.email,
+      type: 'approved',
+      storeName: store.StoreName,
+      firstName: store.firstName,
+      lastName: store.lastName,
+      password: password,
+    };
+
+    await sendMail(payload);
+
+    res.status(200).json({ data: `send verification mail to ${emailID}` });
+  }
 });
 
 /**
- * @desc    create store
- * @route   POST /api/store/send-rejection-mail
+ * @desc   create store
+ * @route  POST /api/store/send-rejection-mail
  * access  private
  */
 export const sendRejectioMail = asyncHandler(async (req, res) => {
@@ -153,25 +187,26 @@ export const deleteDish = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    get store dishes
- * @route   POST /api/store/dishes/get-all
+ * @desc   get store dishes
+ * @route  POST /api/store/dishes/get-all
  * access  Public
  */
 export const getStoreDishes = asyncHandler(async (req, res) => {
   const hasStore = await Store.findOne({ owner: req.user.id });
+  console.log(req.user.id);
   if (!hasStore) {
     res.status(400).json({ message: 'You have to create your store first!' });
+  } else {
+    const allDishes = await Dish.find({ storeId: hasStore.id }).sort({
+      createdAt: -1,
+    });
+    res.status(200).json({ storesAllDishes: allDishes });
   }
-
-  const allDishes = await Dish.find({ storeId: hasStore.id }).sort({
-    createdAt: -1,
-  });
-  res.status(200).json({ storesAllDishes: allDishes });
 });
 
 /**
- * @desc    get all dishes
- * @route   POST /api/store/dishes/get-all
+ * @desc   get all dishes
+ * @route  POST /api/store/dishes/get-all
  * access  Public
  */
 export const getAllDishes = asyncHandler(async (req, res) => {
@@ -180,8 +215,8 @@ export const getAllDishes = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    get dishes image
- * @route   POST /api/store/dishes/get-all
+ * @desc   get dishes image
+ * @route  POST /api/store/dishes/get-all
  * access  Public
  */
 export const getDishImage = asyncHandler(async (req, res) => {

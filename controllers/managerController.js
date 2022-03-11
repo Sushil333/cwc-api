@@ -1,7 +1,8 @@
 import bcrypt from 'bcryptjs';
 import asyncHandler from 'express-async-handler';
 
-import User from '../models/user.js';
+import Manager from '../models/manager.js';
+import Role from '../models/_helpers/role.js';
 import generateToken from '../utils/generateToken.js';
 
 // @desc    Auth user & get token
@@ -18,7 +19,7 @@ export const signin = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: 'Password is required!' });
 
   // check for user existance
-  const oldUser = await User.findOne({ email });
+  const oldUser = await Manager.findOne({ email });
   if (!oldUser) return res.status(404).json({ message: "User doesn't exist" });
   if (!oldUser.active) res.status(400).json({ message: 'Account is blocked!' });
   // check for hashed password match
@@ -30,7 +31,7 @@ export const signin = asyncHandler(async (req, res) => {
     id: oldUser._id,
     email: oldUser.email,
     name: oldUser.name,
-    imageUrl: oldUser.imageUrl,
+    role: oldUser.role,
   };
   // response jwt token
   const token = generateToken(resData);
@@ -51,24 +52,24 @@ export const signup = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: 'Password is required!' });
 
   // check for user existance
-  const oldUser = await User.findOne({ email });
+  const oldUser = await Manager.findOne({ email });
   if (oldUser) return res.status(400).json({ message: 'User already exists' });
 
   // generate hash for passsword
   const hashedPassword = await bcrypt.hash(password, 12);
 
-  // create new user with hashed password
-  const result = await User.create({
+  // create new manager with hashed password
+  const result = await Manager.create({
     email,
     name: `${firstName} ${lastName}`,
     password: hashedPassword,
+    role: Role.Manager,
   });
 
   const resData = {
     id: result._id,
     email: result.email,
     name: result.name,
-    imageUrl: result.imageUrl,
   };
 
   // response jwt token
@@ -79,9 +80,33 @@ export const signup = asyncHandler(async (req, res) => {
 // @desc    Get user profile
 // @route   POST /api/users/get-user-profile
 // @access  Private
-export const getUserProfile = async (req, res) => {
+export const getManagerProfile = async (req, res) => {
   res.json({
     isLoggedIn: true,
     user: req.user,
   });
 };
+
+// @desc    Get all managers
+// @route   POST /api/users/get-all-managers
+// @access  Private
+export const getAllManagers = asyncHandler(async (req, res) => {
+  if (req.user.role === 'Admin') {
+    const allManagers = await Manager.find().sort({ createdAt: -1 });
+    res.status(200).json({ allManagers });
+  } else res.status(400).json({ message: "You don't have permission" });
+});
+
+export const deactivateManager = asyncHandler(async (req, res) => {
+  const { id, active } = req.body;
+  if (!id) {
+    res.status(400).json('ID is required!');
+  } else {
+    const filter = { _id: id };
+    const update = { active: active };
+    if (req.user.role === 'Admin') {
+      const user = await Manager.findOneAndUpdate(filter, update);
+      res.status(200).json({ message: 'Updated Successfully' });
+    } else res.status(400).json({ message: "You don't have permission" });
+  }
+});

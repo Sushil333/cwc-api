@@ -8,6 +8,7 @@ import connectDB from './config/db.js';
 // routes
 import authRoutes from './routes/userRoutes.js';
 import storeRoutes from './routes/storeRoutes.js';
+import managerRoutes from './routes/managerRoutes.js';
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ connectDB();
 
 const app = express();
 
-app.use(cors({origin: '*'}));
+app.use(cors({ origin: '*' }));
 app.use(morgan('dev'));
 app.use(express.json({ limit: '30mb', extended: true }));
 app.use(express.urlencoded({ limit: '30mb', extended: true }));
@@ -26,6 +27,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/user', authRoutes);
+app.use('/api/managers', managerRoutes);
 app.use('/api/store', storeRoutes);
 
 const PORT = process.env.PORT || 5000;

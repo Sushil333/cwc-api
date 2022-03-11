@@ -50,7 +50,7 @@ router.post(
   createStore
 );
 router.get('/requests', verifyJwt, storeRequests);
-router.get('/send-approved-mail/:emailID', verifyJwt, sendApprovedMail);
+router.get('/send-approved-mail/:id', verifyJwt, sendApprovedMail);
 router.post('/send-rejection-mail', verifyJwt, sendRejectioMail);
 
 // store dish routes
