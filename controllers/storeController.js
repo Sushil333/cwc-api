@@ -102,7 +102,7 @@ export const sendApprovedMail = asyncHandler(async (req, res) => {
 
     await sendMail(payload);
 
-    res.status(200).json({ data: `send verification mail to ${emailID}` });
+    res.status(200).json({ data: `send verification mail to ${store.email}` });
   }
 });
 
