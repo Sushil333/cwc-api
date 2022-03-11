@@ -23,15 +23,18 @@ export default async function sendMail(payload) {
         from: 'bhardwajsushil911@gmail.com',
         to: payload.to,
         subject: 'Hello ✔',
-        text: `
-          Hii ${payload.firstName} ${payload.lastName},
-          Congratulations, We have verified your <b>${payload.storeName}</b> store. Use the following credentials to access your store dashboard on https://cwc-dashboard.netlify.app .
-          
-          email: ${payload.to}
-          password: ${payload.password}
-
-          Thanks and Regards,
-          Cooked With Care
+        html: `
+        <p> Hii ${payload.firstName} ${payload.lastName},<br/>
+        Congratulations, We have verified your <b>${payload.storeName}</b> store. Use the following credentials to access your store dashboard on https://cwc-dashboard.netlify.app .
+        </p>
+        <br />
+        <p>
+        email: ${payload.to}
+        password: ${payload.password}
+        <p>
+        <br />
+        Thanks and Regards,
+        Cooked With Care
       `,
       });
     } catch (err) {
