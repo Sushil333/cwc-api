@@ -6,6 +6,8 @@ const storeSchema = mongoose.Schema(
   {
     email: { type: String, required: true, unique: true },
     storeName: { type: String, required: true },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
     phoneNo: { type: Number, required: true },
     storeAddress: { type: String, required: true },
     aadharCard: { type: String, required: true },
