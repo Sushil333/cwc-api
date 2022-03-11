@@ -24,8 +24,8 @@ export default async function sendMail(payload) {
         to: payload.to,
         subject: 'Hello ✔',
         text: `
-          Hii ${payload.firstName} ${payload.latName},
-          Congratulations, We have verified your ${payload.storeName} store. Use following credential to access your store dashboard on https://cwc-dashboard.netlify.app .
+          Hii ${payload.firstName} ${payload.lastName},
+          Congratulations, We have verified your <b>${payload.storeName}</b> store. Use the following credentials to access your store dashboard on https://cwc-dashboard.netlify.app .
           
           email: ${payload.to}
           password: ${payload.password}
