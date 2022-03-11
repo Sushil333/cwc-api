@@ -78,7 +78,7 @@ export const sendApprovedMail = asyncHandler(async (req, res) => {
 
     const result = await Manager.create({
       email: store.email,
-      name: `${store.firstName} {store.lastName}`,
+      name: `${store.firstName} ${store.lastName}`,
       password: hashedPassword,
       role: Role.Manager,
       active: true,
@@ -94,7 +94,7 @@ export const sendApprovedMail = asyncHandler(async (req, res) => {
     const payload = {
       to: store.email,
       type: 'approved',
-      storeName: store.StoreName,
+      storeName: store.storeName,
       firstName: store.firstName,
       lastName: store.lastName,
       password: password,
