@@ -13,7 +13,10 @@ import {
   getDishImage,
   storeRequests,
   sendApprovedMail,
-  sendRejectioMail
+  sendRejectioMail,
+  getStores,
+  getStoreDishesPublic,
+  getStoreById
 } from '../controllers/storeController.js';
 
 /**
@@ -50,14 +53,17 @@ router.post(
   createStore
 );
 router.get('/requests', verifyJwt, storeRequests);
+router.get('/get-stores', getStores);
+router.get('/:storeId', getStoreById);
 router.get('/send-approved-mail/:id', verifyJwt, sendApprovedMail);
 router.post('/send-rejection-mail', verifyJwt, sendRejectioMail);
 
 // store dish routes
-router.post('/dishes/create', verifyJwt, upload.single('dishImg'), createDish);
-router.post('/dishes/delete', verifyJwt, deleteDish);
 router.get('/dishes/get-store-dishes', verifyJwt, getStoreDishes);
+router.get('/dishes/get-store-dishes/:storeId', getStoreDishesPublic);
 router.get('/dishes/get-all-dishes', getAllDishes);
 router.get('/dish/image/:key', getDishImage);
+router.post('/dishes/create', verifyJwt, upload.single('dishImg'), createDish);
+router.post('/dishes/delete', verifyJwt, deleteDish);
 
 export default router;

@@ -12,6 +12,8 @@ const storeSchema = mongoose.Schema(
     storeAddress: { type: String, required: true },
     aadharCard: { type: String, required: true },
     panCard: { type: String, required: true },
+    // city: { type: String, required: true },
+    // state: { type: String, required: true },
     status: { type: String, default: StoreStauts.Pending },
     storeBanner: { type: String, required: false },
     subscriptionPrice: { type: Number, required: false },

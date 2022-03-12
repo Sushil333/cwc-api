@@ -29,9 +29,9 @@ async function uploadFile(file) {
     Key: file.filename,
   };
 
+  const aws_res = await s3.upload(uploadParams).promise();
   await unLinkFile(file.path);
-
-  return s3.upload(uploadParams).promise();
+  return aws_res;
 }
 const _uploadFile = uploadFile;
 export { _uploadFile as uploadFile };

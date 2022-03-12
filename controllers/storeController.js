@@ -20,7 +20,8 @@ export const createStore = asyncHandler(async (req, res) => {
   const aadharCard = req.files['aadhar'][0];
   const panCard = req.files['pancard'][0];
 
-  const { storeName, email, mobileNo, storeAddress } = req.body;
+  const { storeName, email, mobileNo, storeAddress, firstName, lastName } =
+    req.body;
 
   const errorList = [];
   if (!email) errorList.push('Email is required');
@@ -36,10 +37,11 @@ export const createStore = asyncHandler(async (req, res) => {
     const aadharUploadRes = await uploadFile(aadharCard);
     const panUploadRes = await uploadFile(panCard);
 
-    console.log();
     const store = new Store({
+      firstName,
+      lastName,
       storeName,
-      mobileNo,
+      phoneNo: mobileNo,
       storeAddress,
       email,
       aadharCard: aadharUploadRes.Location,
@@ -57,7 +59,16 @@ export const createStore = asyncHandler(async (req, res) => {
  * access  private
  */
 export const storeRequests = asyncHandler(async (req, res) => {
-  const storeRequestList = await Store.find().sort({ createdAt: -1 });
+  const storeRequestList = await Store.find({
+    status: storeStatus.Approved || storeStatus.Pending,
+  }).sort({ createdAt: -1 });
+  res.status(200).json({ data: storeRequestList });
+});
+
+export const getStores = asyncHandler(async (req, res) => {
+  const storeRequestList = await Store.find({
+    status: storeStatus.Approved,
+  }).sort({ ra: -1 });
   res.status(200).json({ data: storeRequestList });
 });
 
@@ -202,6 +213,29 @@ export const getStoreDishes = asyncHandler(async (req, res) => {
     });
     res.status(200).json({ storesAllDishes: allDishes });
   }
+});
+
+export const getStoreDishesPublic = asyncHandler(async (req, res) => {
+  const { storeId } = req.params;
+
+  const hasStore = await Store.findById(storeId);
+  if (!hasStore) {
+    res.status(400).json({ error: 'You have to create your store first!' });
+  } else {
+    const allDishes = await Dish.find({ storeId: storeId }).sort({
+      createdAt: -1,
+    });
+    res.status(200).json({ data: allDishes });
+  }
+});
+
+export const getStoreById = asyncHandler(async (req, res) => {
+  const { storeId } = req.params;
+  const hasStore = await Store.findById(storeId);
+  if (!hasStore) {
+    res.status(400).json({ error: 'You have to create your store first!' });
+  }
+  res.status(200).json({ data: hasStore });
 });
 
 /**
