@@ -1,10 +1,6 @@
 import { createReadStream } from 'fs';
 import aws from 'aws-sdk';
 import dotenv from 'dotenv';
-import { unlink } from 'fs';
-import util from 'util';
-
-const unLinkFile = util.promisify(unlink);
 
 dotenv.config();
 
@@ -29,9 +25,7 @@ async function uploadFile(file) {
     Key: file.filename,
   };
 
-  const aws_res = await s3.upload(uploadParams).promise();
-  await unLinkFile(file.path);
-  return aws_res;
+  return s3.upload(uploadParams).promise();
 }
 const _uploadFile = uploadFile;
 export { _uploadFile as uploadFile };

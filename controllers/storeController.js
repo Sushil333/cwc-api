@@ -1,6 +1,8 @@
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import asyncHandler from 'express-async-handler';
+import { unlink } from 'fs';
+import util from 'util';
 
 import Store from '../models/store.js';
 import Manager from '../models/manager.js';
@@ -10,6 +12,8 @@ import Role from '../models/_helpers/role.js';
 import { deleteFile, uploadFile, getFileStream } from '../utils/s3.js';
 import sendMail from '../utils/nodemailer.js';
 import storeStatus from '../models/_helpers/storeStatus.js';
+
+const unLinkFile = util.promisify(unlink);
 
 /**
  * @desc   create store
@@ -35,7 +39,10 @@ export const createStore = asyncHandler(async (req, res) => {
     res.status(400).json({ message: errorList });
   } else {
     const aadharUploadRes = await uploadFile(aadharCard);
+    await unLinkFile(aadharCard.path);
+
     const panUploadRes = await uploadFile(panCard);
+    await unLinkFile(panCard.path);
 
     const store = new Store({
       firstName,
