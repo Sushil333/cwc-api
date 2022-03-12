@@ -159,7 +159,7 @@ export const createDish = asyncHandler(async (req, res) => {
     res.status(400).json({ message: errorList });
   } else {
     const aws_res = await uploadFile(dishImg);
-
+    await unLinkFile(dishImg.path);
     const dish = new Dish({
       dishName,
       description,
