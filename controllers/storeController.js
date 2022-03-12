@@ -39,10 +39,10 @@ export const createStore = asyncHandler(async (req, res) => {
     res.status(400).json({ message: errorList });
   } else {
     const aadharUploadRes = await uploadFile(aadharCard);
-    await unLinkFile(aadharCard.path);
+    if (aadharUploadRes) await unLinkFile(aadharCard.path);
 
     const panUploadRes = await uploadFile(panCard);
-    await unLinkFile(panCard.path);
+    if (panUploadRes) await unLinkFile(panCard.path);
 
     const store = new Store({
       firstName,
@@ -159,7 +159,8 @@ export const createDish = asyncHandler(async (req, res) => {
     res.status(400).json({ message: errorList });
   } else {
     const aws_res = await uploadFile(dishImg);
-    await unLinkFile(dishImg.path);
+    if (aws_res) await unLinkFile(dishImg.path);
+
     const dish = new Dish({
       dishName,
       description,
