@@ -1,6 +1,7 @@
-import { createReadStream, unlink } from 'fs';
+import { createReadStream } from 'fs';
 import aws from 'aws-sdk';
 import dotenv from 'dotenv';
+import { unlink } from 'fs';
 import util from 'util';
 
 const unLinkFile = util.promisify(unlink);
@@ -29,7 +30,7 @@ async function uploadFile(file) {
   };
 
   const aws_res = await s3.upload(uploadParams).promise();
-  // await unLinkFile(file.path);
+  await unLinkFile(file.path);
   return aws_res;
 }
 const _uploadFile = uploadFile;
