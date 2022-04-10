@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import asyncHandler from 'express-async-handler';
+import { unlink } from 'fs';
 
 import Store from '../models/store.js';
 import Manager from '../models/manager.js';
@@ -152,6 +153,16 @@ export const createDish = asyncHandler(async (req, res) => {
   } else {
     const aws_res = await uploadFile(dishImg);
 
+    unlink(dishImg.path, function (err) {
+      if (err && err.code == 'ENOENT') {
+        console.info("File doesn't exist, won't remove it.");
+      } else if (err) {
+        console.error('Error occurred while trying to remove file');
+      } else {
+        console.info(`removed`);
+      }
+    });
+
     const dish = new Dish({
       dishName,
       description,
@@ -203,7 +214,6 @@ export const deleteDish = asyncHandler(async (req, res) => {
  */
 export const getStoreDishes = asyncHandler(async (req, res) => {
   const hasStore = await Store.findOne({ owner: req.user.id });
-  console.log(req.user.id);
   if (!hasStore) {
     res.status(400).json({ message: 'You have to create your store first!' });
   } else {
