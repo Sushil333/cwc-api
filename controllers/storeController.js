@@ -12,6 +12,7 @@ import Role from '../models/_helpers/role.js';
 import { deleteFile, uploadFile, getFileStream } from '../utils/s3.js';
 import sendMail from '../utils/nodemailer.js';
 import storeStatus from '../models/_helpers/storeStatus.js';
+import path, { dirname } from 'path';
 
 /**
  * @desc   create store
@@ -153,7 +154,7 @@ export const createDish = asyncHandler(async (req, res) => {
   } else {
     const aws_res = await uploadFile(dishImg);
 
-    unlink(dishImg.path, function (err) {
+    unlink(path.resolve(dishImg.path), function (err) {
       if (err && err.code == 'ENOENT') {
         console.info("File doesn't exist, won't remove it.");
       } else if (err) {
