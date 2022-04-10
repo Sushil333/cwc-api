@@ -247,9 +247,11 @@ export const getAllDishes = asyncHandler(async (req, res) => {
 });
 
 export const placeOrders = asyncHandler(async (req, res) => {
-  const { dishName, address, price, username } = req.body;
-  console.log(req.body);
+  const { storeId, dishName, address, price, username } = req.body;
+  
   const placedOrder = await Order.create({
+    storeId,
+    userId: req.user.id,
     dishName,
     address,
     price,
@@ -259,10 +261,30 @@ export const placeOrders = asyncHandler(async (req, res) => {
   res.status(200).json({ data: placedOrder });
 });
 
-export const getAllOrders = asyncHandler(async (req, res) => {
+export const userOrderHistory = asyncHandler(async (req, res) => {
   try {
-    const data = await Order.find();
-    res.status(200).json({ data: data });
+    const orders = await Order.find({ userId: req.user.id }).sort({
+      createdAt: -1,
+    });
+    res.status(200).json({ data: orders });
+  } catch (err) {
+    res.status(400).json({ error: err });
+  }
+});
+
+export const storeOrderHistory = asyncHandler(async (req, res) => {
+  try {
+    const user = await Manager.findById(req.user.id);
+    const store = await Store.find({ owner: user._id });
+
+    if (!user) res.status(400).json({ data: "User doesn't exists!" });
+    if (!store) res.status(400).json({ data: "Store doesn't exists!" });
+
+    const orders = await Order.find({ storeId: store[0]._id }).sort({
+      createdAt: -1,
+    });
+
+    res.status(200).json({ data: orders });
   } catch (err) {
     res.status(400).json({ error: err });
   }
