@@ -16,7 +16,9 @@ import {
   sendRejectioMail,
   getStores,
   getStoreDishesPublic,
-  getStoreById
+  getStoreById,
+  placeOrders,
+  getAllOrders,
 } from '../controllers/storeController.js';
 
 /**
@@ -52,11 +54,13 @@ router.post(
   ]),
   createStore
 );
+router.get('/orders', verifyJwt, getAllOrders);
 router.get('/requests', verifyJwt, storeRequests);
 router.get('/get-stores', getStores);
 router.get('/:storeId', getStoreById);
 router.get('/send-approved-mail/:id', verifyJwt, sendApprovedMail);
 router.post('/send-rejection-mail', verifyJwt, sendRejectioMail);
+router.post('/place-orders', placeOrders);
 
 // store dish routes
 router.get('/dishes/get-store-dishes', verifyJwt, getStoreDishes);

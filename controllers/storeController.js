@@ -4,6 +4,7 @@ import asyncHandler from 'express-async-handler';
 
 import Store from '../models/store.js';
 import Manager from '../models/manager.js';
+import Order from '../models/order.js';
 import Dish from '../models/dish.js';
 import Role from '../models/_helpers/role.js';
 
@@ -59,16 +60,14 @@ export const createStore = asyncHandler(async (req, res) => {
  * access  private
  */
 export const storeRequests = asyncHandler(async (req, res) => {
-  const storeRequestList = await Store.find({
-    status: storeStatus.Approved || storeStatus.Pending,
-  }).sort({ createdAt: -1 });
+  const storeRequestList = await Store.find().sort({ createdAt: -1 });
   res.status(200).json({ data: storeRequestList });
 });
 
 export const getStores = asyncHandler(async (req, res) => {
   const storeRequestList = await Store.find({
     status: storeStatus.Approved,
-  }).sort({ ra: -1 });
+  }).sort({ createdAt: -1 });
   res.status(200).json({ data: storeRequestList });
 });
 
@@ -246,6 +245,28 @@ export const getStoreById = asyncHandler(async (req, res) => {
 export const getAllDishes = asyncHandler(async (req, res) => {
   const allDishes = await Dish.find().sort({ createdAt: -1 });
   res.status(200).json({ storesAllDishes: allDishes });
+});
+
+export const placeOrders = asyncHandler(async (req, res) => {
+  const { dishName, address, price, username } = req.body;
+  console.log(req.body);
+  const placedOrder = await Order.create({
+    dishName,
+    address,
+    price,
+    username,
+  });
+
+  res.status(200).json({ data: placedOrder });
+});
+
+export const getAllOrders = asyncHandler(async (req, res) => {
+  try {
+    const data = await Order.find();
+    res.status(200).json({ data: data });
+  } catch (err) {
+    res.status(400).json({ error: err });
+  }
 });
 
 /**

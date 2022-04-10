@@ -2,6 +2,7 @@ import { createReadStream } from 'fs';
 import aws from 'aws-sdk';
 import dotenv from 'dotenv';
 import { unlink } from 'fs';
+import fs from fs;
 import util from 'util';
 
 const unLinkFile = util.promisify(unlink);
@@ -30,6 +31,17 @@ async function uploadFile(file) {
   };
 
   const aws_res = await s3.upload(uploadParams).promise();
+
+  fs.unlink(file.path, function(err) {
+    if(err && err.code == 'ENOENT') {
+        console.info("File doesn't exist, won't remove it.");
+    } else if (err) {
+        console.error("Error occurred while trying to remove file");
+    } else {
+        console.info(`removed`);
+    }
+});
+
   await unLinkFile(file.path);
   return aws_res;
 }

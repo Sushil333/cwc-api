@@ -43,6 +43,8 @@ export const signin = asyncHandler(async (req, res) => {
 export const signup = asyncHandler(async (req, res) => {
   const { email, password, firstName, lastName } = req.body;
 
+  console.log(email, password, firstName, lastName);
+
   // parameter validations
   if (!email && !password)
     return res.status(400).json({ message: 'Email and Password is required!' });
@@ -73,7 +75,7 @@ export const signup = asyncHandler(async (req, res) => {
 
   // response jwt token
   const token = generateToken(resData);
-  res.status(201).json({ ...resData, token });
+  res.status(201).json({ da: 'asd' });
 });
 
 // @desc    Get user profile
