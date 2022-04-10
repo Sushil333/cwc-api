@@ -32,10 +32,6 @@ async function uploadFile(file) {
 
   const aws_res = await s3.upload(uploadParams).promise();
 
-  console.log('-----------------------');
-  console.log(file.path);
-  console.log('-----------------------');
-
   fs.unlink(file.path, function (err) {
     if (err && err.code == 'ENOENT') {
       console.info("File doesn't exist, won't remove it.");
@@ -46,7 +42,7 @@ async function uploadFile(file) {
     }
   });
 
-  await unLinkFile(file.path);
+  // await unLinkFile(file.path);
   return aws_res;
 }
 const _uploadFile = uploadFile;
