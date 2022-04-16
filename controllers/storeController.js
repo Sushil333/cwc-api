@@ -248,7 +248,6 @@ export const getAllDishes = asyncHandler(async (req, res) => {
 
 export const placeOrders = asyncHandler(async (req, res) => {
   const { storeId, dishName, address, price, username } = req.body;
-  
   const placedOrder = await Order.create({
     storeId,
     userId: req.user.id,
@@ -258,7 +257,7 @@ export const placeOrders = asyncHandler(async (req, res) => {
     username,
   });
 
-  res.status(200).json({ data: placedOrder });
+  res.status(200).json({ data: 'placedOrder' });
 });
 
 export const userOrderHistory = asyncHandler(async (req, res) => {
