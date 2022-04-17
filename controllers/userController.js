@@ -75,7 +75,7 @@ export const signup = asyncHandler(async (req, res) => {
 
   // response jwt token
   const token = generateToken(resData);
-  res.status(201).json({ da: 'asd' });
+  res.status(201).json({ data: token });
 });
 
 // @desc    Get user profile
@@ -94,9 +94,9 @@ export const resetPassword = asyncHandler(async (req, res) => {
   if (!user) res.status(400).json({ data: 'User not found!' });
 
   const isPasswordCorrect = await bcrypt.compare(oldPassword, user.password);
-  if (!isPasswordCorrect)
+  if (!isPasswordCorrect) {
     res.status(400).json({ data: "password dosn't match!" });
-  else {
+  } else {
     const hashedPassword = await bcrypt.hash(newPassword, 12);
     user.password = hashedPassword;
     user.save();
