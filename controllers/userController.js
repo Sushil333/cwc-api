@@ -91,14 +91,14 @@ export const getUserProfile = async (req, res) => {
 export const resetPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
   const user = await User.findById(req.user.id);
-  console.log(user.password);
   if (!user) res.status(400).json({ data: 'User not found!' });
 
   const isPasswordCorrect = await bcrypt.compare(oldPassword, user.password);
   if (!isPasswordCorrect)
     res.status(400).json({ data: "password dosn't match!" });
   else {
-    user.password = newPassword;
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    user.password = hashedPassword;
     user.save();
     res.status(200).json({ data: 'Password Updated Successfully' });
   }
