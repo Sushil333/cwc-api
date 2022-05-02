@@ -247,17 +247,29 @@ export const getAllDishes = asyncHandler(async (req, res) => {
 });
 
 export const placeOrders = asyncHandler(async (req, res) => {
-  const { storeId, dishName, address, price, username } = req.body;
-  const placedOrder = await Order.create({
+  const {
+    storeId,
+    dishName,
+    address,
+    amount,
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature,
+    username,
+  } = req.body;
+  const record = await Order.create({
     storeId,
     userId: req.user.id,
     dishName,
     address,
-    price,
+    amount,
     username,
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature,
   });
 
-  res.status(200).json({ data: 'placedOrder' });
+  res.status(200).json({ data: record });
 });
 
 export const userOrderHistory = asyncHandler(async (req, res) => {

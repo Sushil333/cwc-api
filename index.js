@@ -9,6 +9,7 @@ import connectDB from './config/db.js';
 import authRoutes from './routes/userRoutes.js';
 import storeRoutes from './routes/storeRoutes.js';
 import managerRoutes from './routes/managerRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.get('/', (req, res) => {
 app.use('/api/user', authRoutes);
 app.use('/api/managers', managerRoutes);
 app.use('/api/store', storeRoutes);
+app.use('/api/payments', paymentRoutes);
 
 const PORT = process.env.PORT || 5000;
 

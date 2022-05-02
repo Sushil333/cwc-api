@@ -7,7 +7,10 @@ const orderSchema = mongoose.Schema(
     username: { type: String, required: true },
     address: { type: String, required: true },
     dishName: { type: String, required: true },
-    price: { type: String, required: true },
+    amount: { type: String, required: true },
+    razorpay_order_id: { type: String, required: true },
+    razorpay_payment_id: { type: String, required: true },
+    razorpay_signature: { type: String, required: true },
   },
   { timestamps: true }
 );
