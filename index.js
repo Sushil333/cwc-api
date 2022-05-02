@@ -11,13 +11,10 @@ import storeRoutes from './routes/storeRoutes.js';
 import managerRoutes from './routes/managerRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 
-// accessing environment variables
 dotenv.config();
 
-// db connection
 connectDB();
 
-// express instance
 const app = express();
 
 app.use(cors({ origin: '*' }));
