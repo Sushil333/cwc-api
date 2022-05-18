@@ -311,3 +311,24 @@ export const getDishImage = asyncHandler(async (req, res) => {
   const readStream = getFileStream(key);
   readStream.pipe(res);
 });
+
+export const getStoreOrderDetails = asyncHandler(async (req, res) => {
+  const { storeId } = req.params;
+
+  const orders = await Order.find({ storeId });
+
+  let totalRevenue = 0;
+  let totalOrders = 0;
+
+  orders.forEach((order) => {
+    totalRevenue += parseInt(order.amount);
+    totalOrders += 1;
+  });
+
+  res.status(200).json({
+    data: {
+      totalRevenue,
+      totalOrders,
+    },
+  });
+});

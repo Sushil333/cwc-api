@@ -20,6 +20,7 @@ import {
   placeOrders,
   storeOrderHistory,
   userOrderHistory,
+  getStoreOrderDetails,
 } from '../controllers/storeController.js';
 
 /**
@@ -60,6 +61,7 @@ router.get('/user-orders-history', verifyJwt, userOrderHistory);
 router.get('/requests', verifyJwt, storeRequests);
 router.get('/get-stores', getStores);
 router.get('/:storeId', getStoreById);
+router.get('/get-store-order-details/:storeId', getStoreOrderDetails);
 router.get('/send-approved-mail/:id', verifyJwt, sendApprovedMail);
 router.post('/send-rejection-mail', verifyJwt, sendRejectioMail);
 router.post('/place-orders', verifyJwt, placeOrders);
