@@ -21,6 +21,7 @@ import {
   storeOrderHistory,
   userOrderHistory,
   getStoreOrderDetails,
+  getUserStore,
 } from '../controllers/storeController.js';
 
 /**
@@ -56,15 +57,16 @@ router.post(
   ]),
   createStore
 );
+router.get('/requests', verifyJwt, storeRequests);
 router.get('/store-orders-history', verifyJwt, storeOrderHistory);
 router.get('/user-orders-history', verifyJwt, userOrderHistory);
-router.get('/requests', verifyJwt, storeRequests);
-router.get('/get-stores', getStores);
-router.get('/:storeId', getStoreById);
-router.get('/get-store-order-details/:storeId', getStoreOrderDetails);
+router.get('/get-user-store', verifyJwt, getUserStore);
 router.get('/send-approved-mail/:id', verifyJwt, sendApprovedMail);
 router.post('/send-rejection-mail', verifyJwt, sendRejectioMail);
 router.post('/place-orders', verifyJwt, placeOrders);
+router.get('/get-store-order-details/:storeId', getStoreOrderDetails);
+router.get('/get-stores', getStores);
+router.get('/:storeId', getStoreById);
 
 // store dish routes
 router.get('/dishes/get-store-dishes', verifyJwt, getStoreDishes);

@@ -332,3 +332,11 @@ export const getStoreOrderDetails = asyncHandler(async (req, res) => {
     },
   });
 });
+
+export const getUserStore = asyncHandler(async (req, res) => {
+  const store = await Store.find({ owner: req.user.id });
+
+  if (!store) res.status(400).json({ data: "Store doesn't exists!" });
+
+  res.status(200).json({ data: store[0] });
+});
