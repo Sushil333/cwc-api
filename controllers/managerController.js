@@ -110,3 +110,19 @@ export const deactivateManager = asyncHandler(async (req, res) => {
     } else res.status(400).json({ message: "You don't have permission" });
   }
 });
+
+export const resetPassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  const user = await Manager.findById(req.user.id);
+  if (!user) res.status(400).json({ data: 'User not found!' });
+
+  const isPasswordCorrect = await bcrypt.compare(oldPassword, user.password);
+  if (!isPasswordCorrect) {
+    res.status(400).json({ data: "password dosn't match!" });
+  } else {
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    user.password = hashedPassword;
+    user.save();
+    res.status(200).json({ data: 'Password Updated Successfully' });
+  }
+});
