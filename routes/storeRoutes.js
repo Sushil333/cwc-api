@@ -22,6 +22,7 @@ import {
   userOrderHistory,
   getStoreOrderDetails,
   getUserStore,
+  disableDish
 } from '../controllers/storeController.js';
 
 /**
@@ -75,5 +76,6 @@ router.get('/dishes/get-all-dishes', getAllDishes);
 router.get('/dish/image/:key', getDishImage);
 router.post('/dishes/create', verifyJwt, upload.single('dishImg'), createDish);
 router.post('/dishes/delete', verifyJwt, deleteDish);
+router.post('/disable-dish', verifyJwt, disableDish);
 
 export default router;

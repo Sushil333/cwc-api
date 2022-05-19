@@ -340,3 +340,20 @@ export const getUserStore = asyncHandler(async (req, res) => {
 
   res.status(200).json({ data: store[0] });
 });
+
+/**
+ * @desc   Disable dish
+ * @route  POST /api/store/dishes/disable-dish
+ * access  Private
+ */
+export const disableDish = asyncHandler(async (req, res) => {
+  const { dishId, status } = req.body;
+
+  const dish = await Dish.findById(dishId);
+  if (!dish) res.status(400).json({ data: 'Dish not found!' });
+  dish.disabled = status;
+  dish.save();
+  res
+    .status(200)
+    .json({ data: status ? 'Dish is disabled' : 'Dish is enabled' });
+});
