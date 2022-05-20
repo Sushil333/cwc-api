@@ -76,6 +76,6 @@ router.get('/dishes/get-all-dishes', getAllDishes);
 router.get('/dish/image/:key', getDishImage);
 router.post('/dishes/create', verifyJwt, upload.single('dishImg'), createDish);
 router.post('/dishes/delete', verifyJwt, deleteDish);
-router.post('/disable-dish', verifyJwt, disableDish);
+router.post('/dish/disable-dish', verifyJwt, disableDish);
 
 export default router;

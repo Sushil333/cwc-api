@@ -348,12 +348,9 @@ export const getUserStore = asyncHandler(async (req, res) => {
  */
 export const disableDish = asyncHandler(async (req, res) => {
   const { dishId, status } = req.body;
-
   const dish = await Dish.findById(dishId);
   if (!dish) res.status(400).json({ data: 'Dish not found!' });
-  dish.disabled = status;
+  dish.status = status;
   dish.save();
-  res
-    .status(200)
-    .json({ data: status ? 'Dish is disabled' : 'Dish is enabled' });
+  res.status(200).json({ data: dish });
 });
