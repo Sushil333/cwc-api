@@ -1,0 +1,1 @@
+API DEMO: https://apartments-rental-api.herokuapp.com/
