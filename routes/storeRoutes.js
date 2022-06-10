@@ -22,7 +22,8 @@ import {
   userOrderHistory,
   getStoreOrderDetails,
   getUserStore,
-  disableDish
+  disableDish,
+  deleteStore
 } from '../controllers/storeController.js';
 
 /**
@@ -68,6 +69,7 @@ router.post('/place-orders', verifyJwt, placeOrders);
 router.get('/get-store-order-details/:storeId', getStoreOrderDetails);
 router.get('/get-stores', getStores);
 router.get('/:storeId', getStoreById);
+router.get('/delete/:id', deleteStore);
 
 // store dish routes
 router.get('/dishes/get-store-dishes', verifyJwt, getStoreDishes);

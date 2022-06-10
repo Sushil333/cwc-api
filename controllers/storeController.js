@@ -354,3 +354,23 @@ export const disableDish = asyncHandler(async (req, res) => {
   dish.save();
   res.status(200).json({ data: dish });
 });
+
+export const deleteStore = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  const storeRequest = await Store.findById(id);
+  console.log(storeRequest);
+  if (!storeRequest) res.status(400).json({ data: 'Store not found!' });
+  storeRequest.remove();
+  res.status(200).json({ data: 'Store deleted successfully!' });
+});
+
+export const donateToNGO = asyncHandler(async (req, res) => {
+  const { dishId } = req.params;
+  console.log(id);
+  const storeRequest = await Store.findById(id);
+  console.log(storeRequest);
+  if (!storeRequest) res.status(400).json({ data: 'Store not found!' });
+  storeRequest.remove();
+  res.status(200).json({ data: 'Store deleted successfully!' });
+});
